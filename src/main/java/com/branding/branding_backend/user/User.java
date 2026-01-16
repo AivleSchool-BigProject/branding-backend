@@ -18,7 +18,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
-    private Long id;
+    private Long userId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -32,6 +32,9 @@ public class User {
 
     @Column(nullable = false, length = 50, unique = true)
     private String email;
+
+    @Column(nullable = false, length = 50, unique = true)
+    private String loginId;
 
     @Column(nullable = false, length = 100)
     private String password;
@@ -47,7 +50,14 @@ public class User {
         }
     }
 
-    public User(String email, String password, String mobileNumber, String username) {
+    public User(
+            String loginId,
+            String email,
+            String password,
+            String mobileNumber,
+            String username
+    ) {
+        this.loginId = loginId;
         this.email = email;
         this.password = password;
         this.mobileNumber = mobileNumber;

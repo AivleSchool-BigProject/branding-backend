@@ -13,13 +13,23 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public User register(String email, String password, String mobileNumber, String username) {
+    public User register(
+            String loginId,
+            String email,
+            String password,
+            String mobileNumber,
+            String username
+    ) {
+        if (userRepository.existsByLoginId(loginId)) {
+            throw new IllegalArgumentException("이미 존재하는 아이디입니다.");
+        }
 
         if (userRepository.existsByEmail(email)) {
             throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
         }
 
         User user = new User(
+                loginId,
                 email,
                 passwordEncoder.encode(password),
                 mobileNumber,
@@ -30,8 +40,8 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public User findByEmail(String email) {
-        return userRepository.findByEmail(email)
+    public User findByLoginId(String loginId) {
+        return userRepository.findByLoginId(loginId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
     }
 }

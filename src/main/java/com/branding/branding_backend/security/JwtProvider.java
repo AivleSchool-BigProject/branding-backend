@@ -4,7 +4,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
@@ -25,13 +24,14 @@ public class JwtProvider {
         this.accessTokenExpiration = accessTokenExpiration;
     }
 
-    public String createAccessToken(Long userId, String email){
+    public String createAccessToken(Long userId, String loginId, String role) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + accessTokenExpiration);
 
         return Jwts.builder()
-                .setSubject(String.valueOf(userId))
-                .claim("email", email)
+                .setSubject(String.valueOf(userId)) // PK
+                .claim("loginId", loginId)
+                .claim("role", role)
                 .setIssuedAt(now)
                 .setExpiration(expiry)
                 .signWith(key, SignatureAlgorithm.HS256)
@@ -40,9 +40,12 @@ public class JwtProvider {
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token);
             return true;
-        } catch (JwtException | IllegalArgumentException e) {
+        } catch (Exception e) {
             return false;
         }
     }
