@@ -38,6 +38,6 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           script: |
             pkill -f java || true
-            nohup java -jar /home/ec2-user/app/*.jar \
+            nohup java -jar /home/ec2-user/app/build/libs/*.jar \
               --spring.profiles.active=${{ secrets.SPRING_PROFILES_ACTIVE }} \
               > /home/ec2-user/app/logs/app.log 2>&1 &
