@@ -3,18 +3,23 @@ spring:
     name: branding-backend
 
   datasource:
-    url: jdbc:h2:mem:testdb
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
+    url: jdbc:mysql://localhost:3306/branding
+      ?serverTimezone=Asia/Seoul
+      &characterEncoding=UTF-8
+      &useSSL=false
+      &allowPublicKeyRetrieval=true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root          # 너 로컬 계정
+    password: root1234!      # 로컬 MySQL 비번
 
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
         format_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
 
   sql:
     init:
