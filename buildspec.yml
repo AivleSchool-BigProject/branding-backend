@@ -1,0 +1,27 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      java: corretto17
+
+  pre_build:
+    commands:
+      - echo "pwd=$(pwd)"
+      - ls -la
+      - chmod +x gradlew
+
+  build:
+    commands:
+      - ./gradlew clean build -x test
+      - echo "=== build/libs 확인 ==="
+      - ls -la build/libs
+      # plain.jar 제외하고 "실행 가능한 boot jar"만 잡아서 app.jar로 고정
+      - JAR_PATH=$(ls build/libs/*SNAPSHOT.jar | grep -v plain | head -n 1)
+      - echo "Selected jar: $JAR_PATH"
+      - cp "$JAR_PATH" app.jar
+      - ls -la app.jar
+
+artifacts:
+  files:
+    - app.jar
