@@ -6,17 +6,15 @@ import com.branding.branding_backend.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "promotion_posts")
 @Getter
-@Setter
 @NoArgsConstructor
-
 public class PromotionPost {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_id")
@@ -53,16 +51,12 @@ public class PromotionPost {
 
     @Column(length = 50)
     private String hashtag1;
-
     @Column(length = 50)
     private String hashtag2;
-
     @Column(length = 50)
     private String hashtag3;
-
     @Column(length = 50)
     private String hashtag4;
-
     @Column(length = 50)
     private String hashtag5;
 
@@ -72,23 +66,30 @@ public class PromotionPost {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
+    /* ================= JPA 생명주기 ================= */
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
+
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public static PromotionPost create(User user, PostCreateRequest request) {
+    /* ================= 생성 ================= */
+    public static PromotionPost create(
+            User user,
+            PostCreateRequest request,
+            String imageUrl
+    ) {
         PromotionPost post = new PromotionPost();
         post.user = user;
         post.companyName = request.getCompanyName();
         post.shortDescription = request.getShortDescription();
-        post.logoImageUrl = request.getLogoImageUrl();
         post.region = request.getRegion();
+        post.logoImageUrl = imageUrl;
         post.contactName = request.getContactName();
         post.contactEmail = request.getContactEmail();
         post.companyDescription = request.getCompanyDescription();
@@ -101,10 +102,10 @@ public class PromotionPost {
         return post;
     }
 
+    /* ================= 텍스트 정보 수정 ================= */
     public void update(PostUpdateRequest request) {
         this.companyName = request.getCompanyName();
         this.shortDescription = request.getShortDescription();
-        this.logoImageUrl = request.getLogoImageUrl();
         this.region = request.getRegion();
         this.contactName = request.getContactName();
         this.contactEmail = request.getContactEmail();
@@ -115,5 +116,10 @@ public class PromotionPost {
         this.hashtag3 = request.getHashtag3();
         this.hashtag4 = request.getHashtag4();
         this.hashtag5 = request.getHashtag5();
+    }
+
+    /* ================= 이미지 수정 ================= */
+    public void updateImage(String imageUrl) {
+        this.logoImageUrl = imageUrl;
     }
 }

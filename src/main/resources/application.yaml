@@ -25,6 +25,18 @@ spring:
     init:
       mode: never
 
-jwt:
-  secret: branding-backend-jwt-secret-key-2026-secure!!
-  access-token-expiration: 3600000
+  jwt:
+    secret: branding-backend-jwt-secret-key-2026-secure!!
+    access-token-expiration: 3600000
+
+  cloud:
+    aws:
+      credentials:
+        access-key: YOUR_ACCESS_KEY
+        secret-key: YOUR_SECRET_KEY
+      region:
+        static: ap-northeast-2
+      s3:
+        bucket: YOUR_BUCKET_NAME
+      stack:
+        auto: false

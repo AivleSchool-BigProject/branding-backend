@@ -4,11 +4,13 @@ import com.branding.branding_backend.post.dto.PostCreateRequest;
 import com.branding.branding_backend.post.dto.PostDetailResponse;
 import com.branding.branding_backend.post.dto.PostListResponse;
 import com.branding.branding_backend.post.dto.PostUpdateRequest;
+import com.branding.branding_backend.s3.S3Uploader;
 import com.branding.branding_backend.user.User;
 import com.branding.branding_backend.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,15 +22,20 @@ public class PromotionPostService {
 
     private final PromotionPostRepository postRepository;
     private final UserRepository userRepository;
+    private final S3Uploader s3Uploader;
 
-    /* ================= 게시판 등록 ================= */
-    public Long createPost(Long userId, PostCreateRequest request) {
-
+    /* ================= 홍보물 등록 ================= */
+    public Long createPost(
+            Long userId,
+            PostCreateRequest request,
+            MultipartFile image
+    ) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
 
-        PromotionPost post = PromotionPost.create(user, request);
+        String imageUrl = s3Uploader.upload(image);
 
+        PromotionPost post = PromotionPost.create(user, request, imageUrl);
         return postRepository.save(post).getPostId();
     }
 
@@ -57,8 +64,12 @@ public class PromotionPostService {
     }
 
     /* ================= 수정 ================= */
-    public void updatePost(Long postId, Long userId, PostUpdateRequest request) {
-
+    public void updatePost(
+            Long postId,
+            Long userId,
+            PostUpdateRequest request,
+            MultipartFile image
+    ) {
         PromotionPost post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
 
@@ -67,6 +78,16 @@ public class PromotionPostService {
         }
 
         post.update(request);
+
+        if (image != null && !image.isEmpty()) {
+
+            if (post.getLogoImageUrl() != null) {
+                s3Uploader.delete(post.getLogoImageUrl());
+            }
+
+            String newImageUrl = s3Uploader.upload(image);
+            post.updateImage(newImageUrl);
+        }
     }
 
     /* ================= 삭제 ================= */
@@ -77,6 +98,10 @@ public class PromotionPostService {
 
         if (!post.getUser().getUserId().equals(userId)) {
             throw new IllegalArgumentException("삭제 권한이 없습니다.");
+        }
+
+        if (post.getLogoImageUrl() != null) {
+            s3Uploader.delete(post.getLogoImageUrl());
         }
 
         postRepository.delete(post);

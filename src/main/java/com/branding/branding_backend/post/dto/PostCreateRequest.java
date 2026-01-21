@@ -1,13 +1,14 @@
 package com.branding.branding_backend.post.dto;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class PostCreateRequest {
 
     private String companyName;
     private String shortDescription;
-    private String logoImageUrl;
     private String region;
 
     private String contactName;
