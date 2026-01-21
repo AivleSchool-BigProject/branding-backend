@@ -1,5 +1,7 @@
 package com.branding.branding_backend.post;
 
+import com.branding.branding_backend.post.dto.PostCreateRequest;
+import com.branding.branding_backend.post.dto.PostUpdateRequest;
 import com.branding.branding_backend.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -14,7 +16,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 
-public class Post {
+public class PromotionPost {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_id")
@@ -78,5 +80,40 @@ public class Post {
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
+    }
+
+    public static PromotionPost create(User user, PostCreateRequest request) {
+        PromotionPost post = new PromotionPost();
+        post.user = user;
+        post.companyName = request.getCompanyName();
+        post.shortDescription = request.getShortDescription();
+        post.logoImageUrl = request.getLogoImageUrl();
+        post.region = request.getRegion();
+        post.contactName = request.getContactName();
+        post.contactEmail = request.getContactEmail();
+        post.companyDescription = request.getCompanyDescription();
+        post.companySize = request.getCompanySize();
+        post.hashtag1 = request.getHashtag1();
+        post.hashtag2 = request.getHashtag2();
+        post.hashtag3 = request.getHashtag3();
+        post.hashtag4 = request.getHashtag4();
+        post.hashtag5 = request.getHashtag5();
+        return post;
+    }
+
+    public void update(PostUpdateRequest request) {
+        this.companyName = request.getCompanyName();
+        this.shortDescription = request.getShortDescription();
+        this.logoImageUrl = request.getLogoImageUrl();
+        this.region = request.getRegion();
+        this.contactName = request.getContactName();
+        this.contactEmail = request.getContactEmail();
+        this.companyDescription = request.getCompanyDescription();
+        this.companySize = request.getCompanySize();
+        this.hashtag1 = request.getHashtag1();
+        this.hashtag2 = request.getHashtag2();
+        this.hashtag3 = request.getHashtag3();
+        this.hashtag4 = request.getHashtag4();
+        this.hashtag5 = request.getHashtag5();
     }
 }

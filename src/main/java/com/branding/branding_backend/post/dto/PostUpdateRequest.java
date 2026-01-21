@@ -13,6 +13,9 @@ public class PostUpdateRequest {
     private String contactName;
     private String contactEmail;
 
+    private String companyDescription;
+    private String companySize;
+
     private String hashtag1;
     private String hashtag2;
     private String hashtag3;

@@ -1,9 +1,11 @@
 package com.branding.branding_backend.post.dto;
 
+import com.branding.branding_backend.post.PromotionPost;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -19,8 +21,37 @@ public class PostDetailResponse {
 
     private String contactName;
     private String contactEmail;
+
+    private String companyDescription;
+    private String companySize;
+
     private List<String> hashtags;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    public static PostDetailResponse from(PromotionPost post) {
+
+        List<String> hashtags = new ArrayList<>();
+        if (post.getHashtag1() != null) hashtags.add(post.getHashtag1());
+        if (post.getHashtag2() != null) hashtags.add(post.getHashtag2());
+        if (post.getHashtag3() != null) hashtags.add(post.getHashtag3());
+        if (post.getHashtag4() != null) hashtags.add(post.getHashtag4());
+        if (post.getHashtag5() != null) hashtags.add(post.getHashtag5());
+
+        return new PostDetailResponse(
+                post.getPostId(),
+                post.getCompanyName(),
+                post.getShortDescription(),
+                post.getLogoImageUrl(),
+                post.getRegion(),
+                post.getContactName(),
+                post.getContactEmail(),
+                post.getCompanyDescription(),
+                post.getCompanySize(),
+                hashtags,
+                post.getCreatedAt(),
+                post.getUpdatedAt()
+        );
+    }
 }
