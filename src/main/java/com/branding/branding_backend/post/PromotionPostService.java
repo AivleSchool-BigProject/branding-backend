@@ -77,6 +77,7 @@ public class PromotionPostService {
             throw new IllegalArgumentException("수정 권한이 없습니다.");
         }
 
+
         post.update(request);
 
         if (image != null && !image.isEmpty()) {
@@ -88,6 +89,8 @@ public class PromotionPostService {
             String newImageUrl = s3Uploader.upload(image);
             post.updateImage(newImageUrl);
         }
+        System.out.println("🔥 JWT userId = " + userId);
+        System.out.println("🔥 Post owner userId = " + post.getUser().getUserId());
     }
 
     /* ================= 삭제 ================= */

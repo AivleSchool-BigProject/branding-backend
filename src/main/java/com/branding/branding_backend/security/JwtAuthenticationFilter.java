@@ -20,14 +20,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
 
-    // ⭐️ 이 메서드가 핵심
+    // Swagger / Auth는 JWT 검사 제외
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
 
         return path.startsWith("/auth")
                 || path.startsWith("/swagger-ui")
-                || path.startsWith("/v3/api-docs");
+                || path.startsWith("/v3/api-docs")
+                || path.equals("/swagger-ui.html");
     }
 
     @Override
@@ -37,18 +38,27 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
+        String path = request.getRequestURI();
+        String method = request.getMethod();
         String authHeader = request.getHeader("Authorization");
+
+        // ★ 요청 들어오는지 / 헤더 붙는지 확인
+        System.out.println("[JWT-FILTER] " + method + " " + path);
+        System.out.println("[JWT-FILTER] Authorization header = " + authHeader);
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
 
-            if (jwtProvider.validateToken(token)) {
+            boolean valid = jwtProvider.validateToken(token);
+            System.out.println("[JWT-FILTER] token valid = " + valid);
 
+            if (valid) {
                 Long userId = jwtProvider.getUserId(token);
+                System.out.println("[JWT-FILTER] parsed userId = " + userId);
 
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
-                                userId,
+                                userId,                 // principal = userId
                                 null,
                                 Collections.emptyList()
                         );
@@ -57,9 +67,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         new WebAuthenticationDetailsSource().buildDetails(request)
                 );
 
-                SecurityContextHolder.getContext()
-                        .setAuthentication(authentication);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                // ★ SecurityContext에 들어갔는지 확인
+                System.out.println("[JWT-FILTER] SecurityContext principal = "
+                        + SecurityContextHolder.getContext().getAuthentication().getPrincipal());
             }
+        } else {
+            System.out.println("[JWT-FILTER] No Bearer token");
         }
 
         filterChain.doFilter(request, response);

@@ -27,10 +27,10 @@ public class PromotionPost {
     @Column(name = "company_name")
     private String companyName;
 
-    @Column(name = "short_description", length = 255, nullable = false)
+    @Column(name = "short_description", length = 512, nullable = false)
     private String shortDescription;
 
-    @Column(name = "logo_image_url", length = 255)
+    @Column(name = "logo_image_url", length = 2048)
     private String logoImageUrl;
 
     @Column(length = 50)
