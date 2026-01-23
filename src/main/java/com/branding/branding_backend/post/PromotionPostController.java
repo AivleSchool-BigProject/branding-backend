@@ -38,6 +38,10 @@ public class PromotionPostController {
             @RequestPart("image") MultipartFile image,
             Authentication authentication
     ) {
+        if (authentication == null) {
+            throw new IllegalArgumentException("로그인이 필요합니다.");
+        }
+
         Long userId = (Long) authentication.getPrincipal();
         return postService.createPost(userId, request, image);
     }
@@ -50,6 +54,10 @@ public class PromotionPostController {
             @RequestPart(value = "image", required = false) MultipartFile image,
             Authentication authentication
     ) {
+        if (authentication == null) {
+            throw new IllegalArgumentException("로그인이 필요합니다.");
+        }
+
         Long userId = (Long) authentication.getPrincipal();
         postService.updatePost(postId, userId, request, image);
     }
@@ -60,6 +68,10 @@ public class PromotionPostController {
             @PathVariable Long postId,
             Authentication authentication
     ) {
+        if (authentication == null) {
+            throw new IllegalArgumentException("로그인이 필요합니다.");
+        }
+
         Long userId = (Long) authentication.getPrincipal();
         postService.deletePost(postId, userId);
     }
