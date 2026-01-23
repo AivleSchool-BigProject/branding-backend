@@ -20,6 +20,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
 
+    // ⭐️ 이 메서드가 핵심
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+
+        return path.startsWith("/auth")
+                || path.startsWith("/swagger-ui")
+                || path.startsWith("/v3/api-docs");
+    }
+
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
@@ -34,12 +44,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (jwtProvider.validateToken(token)) {
 
-                // ✅ Long 그대로 사용
                 Long userId = jwtProvider.getUserId(token);
 
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
-                                userId,                // ⭕ Long
+                                userId,
                                 null,
                                 Collections.emptyList()
                         );

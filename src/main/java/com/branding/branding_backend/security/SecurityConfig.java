@@ -27,20 +27,20 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        // 🔹 Swagger 허용
+                        // Swagger 허용
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui.html"
                         ).permitAll()
 
-                        // 🔹 게시판은 토큰 없이 허용
-                        .requestMatchers("/brands/posts/**").permitAll()
-
-                        // 🔹 로그인/회원가입
+                        // 로그인/회원가입
                         .requestMatchers("/auth/**").permitAll()
 
-                        // 🔹 나머지는 JWT 필요
+                        // 게시판 목록/조회는 열어둠
+                        .requestMatchers("/brands/posts/**").permitAll()
+
+                        // 나머지는 JWT 필요
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
