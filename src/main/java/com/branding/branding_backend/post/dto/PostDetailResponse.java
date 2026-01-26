@@ -30,7 +30,11 @@ public class PostDetailResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public static PostDetailResponse from(PromotionPost post) {
+    // 추가: 프론트엔드에서 수정 권한 여부를 결정할 본인 확인 필드
+    private boolean isOwner;
+
+    // 수정: isOwner 매개변수를 추가함
+    public static PostDetailResponse from(PromotionPost post, boolean isOwner) {
 
         List<String> hashtags = new ArrayList<>();
         if (post.getHashtag1() != null) hashtags.add(post.getHashtag1());
@@ -51,7 +55,8 @@ public class PostDetailResponse {
                 post.getCompanySize(),
                 hashtags,
                 post.getCreatedAt(),
-                post.getUpdatedAt()
+                post.getUpdatedAt(),
+                isOwner
         );
     }
 }

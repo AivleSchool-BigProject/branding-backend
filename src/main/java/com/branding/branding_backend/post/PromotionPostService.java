@@ -55,12 +55,17 @@ public class PromotionPostService {
 
     /* ================= 상세 조회 ================= */
     @Transactional(readOnly = true)
-    public PostDetailResponse getPostDetail(Long postId) {
+    public PostDetailResponse getPostDetail(Long postId, Long currentUserId) { // currentUserId 추가
 
         PromotionPost post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
 
-        return PostDetailResponse.from(post);
+        // 본인 확인 로직: 로그인 중이고(not null), 게시글 주인 ID와 접속자 ID가 일치하는지 확인
+        // 기존 update/delete 로직에서 사용하신 getUserId()를 그대로 사용했습니다.
+        boolean isOwner = currentUserId != null && post.getUser().getUserId().equals(currentUserId);
+
+        // 수정된 from 메서드에 isOwner를 담아서 반환
+        return PostDetailResponse.from(post, isOwner);
     }
 
     /* ================= 수정 ================= */
@@ -77,7 +82,6 @@ public class PromotionPostService {
             throw new IllegalArgumentException("수정 권한이 없습니다.");
         }
 
-
         post.update(request);
 
         if (image != null && !image.isEmpty()) {
@@ -89,8 +93,6 @@ public class PromotionPostService {
             String newImageUrl = s3Uploader.upload(image);
             post.updateImage(newImageUrl);
         }
-        System.out.println("🔥 JWT userId = " + userId);
-        System.out.println("🔥 Post owner userId = " + post.getUser().getUserId());
     }
 
     /* ================= 삭제 ================= */

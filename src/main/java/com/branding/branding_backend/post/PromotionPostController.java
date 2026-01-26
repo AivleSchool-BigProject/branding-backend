@@ -25,10 +25,18 @@ public class PromotionPostController {
         return postService.getPostList();
     }
 
+
     /* ================= 홍보물 상세 조회 ================= */
     @GetMapping("/{postId}")
-    public PostDetailResponse getPostDetail(@PathVariable Long postId) {
-        return postService.getPostDetail(postId);
+    public PostDetailResponse getPostDetail(
+            @PathVariable Long postId,
+            Authentication authentication // 추가: 현재 로그인한 사용자의 정보를 받음
+    ) {
+        Long userId = null;
+        if (authentication != null) {
+            userId = (Long) authentication.getPrincipal(); // 로그인 중이라면 ID 추출
+        }
+        return postService.getPostDetail(postId, userId); // userId를 같이 넘겨줌
     }
 
     /* ================= 홍보물 등록 ================= */
@@ -38,10 +46,6 @@ public class PromotionPostController {
             @RequestPart("image") MultipartFile image,
             Authentication authentication
     ) {
-        if (authentication == null) {
-            throw new IllegalArgumentException("로그인이 필요합니다.");
-        }
-
         Long userId = (Long) authentication.getPrincipal();
         return postService.createPost(userId, request, image);
     }
@@ -54,10 +58,6 @@ public class PromotionPostController {
             @RequestPart(value = "image", required = false) MultipartFile image,
             Authentication authentication
     ) {
-        if (authentication == null) {
-            throw new IllegalArgumentException("로그인이 필요합니다.");
-        }
-
         Long userId = (Long) authentication.getPrincipal();
         postService.updatePost(postId, userId, request, image);
     }
@@ -68,10 +68,6 @@ public class PromotionPostController {
             @PathVariable Long postId,
             Authentication authentication
     ) {
-        if (authentication == null) {
-            throw new IllegalArgumentException("로그인이 필요합니다.");
-        }
-
         Long userId = (Long) authentication.getPrincipal();
         postService.deletePost(postId, userId);
     }
