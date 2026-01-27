@@ -37,4 +37,16 @@ public class Brand {
     public void moveToNaming(){
         this.currentStep = CurrentStep.NAMING;
     }
+
+    public void moveToConcept(){
+        this.currentStep = CurrentStep.CONCEPT;
+    }
+
+    public void moveToStory(){
+        this.currentStep = CurrentStep.STORY;
+    }
+
+    public void moveToLogo(){
+        this.currentStep = CurrentStep.LOGO;
+    }
 }
