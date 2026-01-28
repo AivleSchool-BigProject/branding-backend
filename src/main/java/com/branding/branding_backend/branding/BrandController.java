@@ -1,7 +1,10 @@
 package com.branding.branding_backend.branding;
 
-import com.branding.branding_backend.branding.service.InterviewService;
-import com.branding.branding_backend.branding.service.NamingService;
+import com.branding.branding_backend.branding.dto.BrandSelectRequest;
+import com.branding.branding_backend.branding.service.concept.ConceptServiceImpl;
+import com.branding.branding_backend.branding.service.interview.InterviewService;
+import com.branding.branding_backend.branding.service.naming.NamingService;
+import com.branding.branding_backend.branding.service.naming.NamingServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -16,6 +19,8 @@ public class BrandController {
 
     private final InterviewService interviewService;
     private final NamingService namingService;
+    private final ConceptServiceImpl conceptServiceImpl;
+    private final NamingServiceImpl namingServiceImpl;
 
     //브랜드 인터뷰 제출 + AI 진단 + 결과 반환
     @PostMapping("/interview")
@@ -40,7 +45,7 @@ public class BrandController {
     ) {
         Long userId = (Long) authentication.getPrincipal();
         return ResponseEntity.ok(
-                namingService.processNaming(userId, brandId, namingInput)
+                namingServiceImpl.processNaming(userId, brandId, namingInput)
         );
     }
 
@@ -49,10 +54,34 @@ public class BrandController {
     public ResponseEntity<Void> selectNaming(
             @PathVariable Long brandId,
             Authentication authentication,
-            @RequestBody Map<String, String> request
+            @RequestBody BrandSelectRequest request
     ) {
         Long userId = (Long) authentication.getPrincipal();
-        namingService.selectNaming(userId, brandId, request.get("selectedName"));
+        namingServiceImpl.selectNaming(userId, brandId, request.getSelectedByUser());
+        return ResponseEntity.ok().build();
+    }
+
+    //브랜드 컨셉 폼 전송 + AI 컨셉 결과 전달
+    @PostMapping("/{brandId}/concept")
+    public ResponseEntity<Map<String, Object>> generateConcept(
+            @PathVariable Long brandId,
+            Authentication authentication,
+            @RequestBody Map<String, Object> conceptInput
+    ) {
+        Long userId = (Long) authentication.getPrincipal();
+        return ResponseEntity.ok(
+                conceptServiceImpl.processConcept(userId, brandId, conceptInput)
+        );
+    }
+    //브랜드 컨셉 선택(저장)
+    @PostMapping("/{brandId}/concept/select")
+    public ResponseEntity<Void> selectConcept(
+            @PathVariable Long brandId,
+            Authentication authentication,
+            @RequestBody BrandSelectRequest request
+    ) {
+        Long userId = (Long) authentication.getPrincipal();
+        conceptServiceImpl.selectConcept(userId, brandId, request.getSelectedByUser());
         return ResponseEntity.ok().build();
     }
 }

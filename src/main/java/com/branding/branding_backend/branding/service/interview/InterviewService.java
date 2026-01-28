@@ -1,6 +1,4 @@
-package com.branding.branding_backend.branding.service;
-
-import com.branding.branding_backend.user.User;
+package com.branding.branding_backend.branding.service.interview;
 
 import java.util.Map;
 

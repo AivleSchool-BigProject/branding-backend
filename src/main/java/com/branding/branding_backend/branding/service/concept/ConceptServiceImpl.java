@@ -1,4 +1,4 @@
-package com.branding.branding_backend.branding.service;
+package com.branding.branding_backend.branding.service.concept;
 
 import com.branding.branding_backend.ai.AiClient;
 import com.branding.branding_backend.branding.entity.Brand;
@@ -16,17 +16,17 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class NamingServiceImpl implements NamingService {
+public class ConceptServiceImpl implements ConceptService {
 
     private final BrandRepository brandRepository;
     private final AiClient aiClient;
     private final BrandOutputRepository brandOutputRepository;
 
     @Override
-    public Map<String, Object> processNaming(
+    public Map<String, Object> processConcept(
             Long userId,
             Long brandId,
-            Map<String, Object> namingInput
+            Map<String, Object> conceptInput
     ) {
         //브랜드 조회
         Brand brand = brandRepository.findById(brandId)
@@ -35,23 +35,19 @@ public class NamingServiceImpl implements NamingService {
         if (!brand.getUser().getUserId().equals(userId)) {
             throw new IllegalStateException("해당 브랜드에 대한 권한이 없습니다.");
         }
-        //단계 검증
-        if (brand.getCurrentStep() != CurrentStep.NAMING) {
-            throw new IllegalStateException("네이밍 단계가 아닙니다.");
-        }
-        //AI 네이밍 생성 (Mock)
+        //AI 컨셉 생성 (Mock)
         Map<String, Object> aiResult =
-                aiClient.requestNaming(namingInput);
+                aiClient.requestConcept(conceptInput);
         //결과 반환
         return aiResult;
     }
 
     @Override
     @Transactional
-    public void selectNaming(
+    public void selectConcept(
             Long userId,
             Long brandId,
-            String selectedName
+            String selectedConcept
     ) {
         //브랜드 조회
         Brand brand = brandRepository.findById(brandId)
@@ -61,22 +57,21 @@ public class NamingServiceImpl implements NamingService {
             throw new IllegalStateException("해당 브랜드에 대한 권한이 없습니다.");
         }
         //단계 검증
-        if (brand.getCurrentStep() != CurrentStep.NAMING) {
-            throw new IllegalStateException("네이밍 단계가 아닙니다.");
+        if (brand.getCurrentStep() != CurrentStep.CONCEPT) {
+            throw new IllegalStateException("컨셉 단계가 아닙니다.");
         }
-        //기존 네이밍 있으면 덮어쓰기
+        //기존 컨셉 있으면 덮어쓰기
         BrandOutput output = brandOutputRepository
-                .findByBrandAndOutputType(brand, OutputType.NAME)
+                .findByBrandAndOutputType(brand, OutputType.CONCEPT)
                 .orElseGet(BrandOutput::new);
-
         //값 세팅 (덮어쓰기)
         output.setBrand(brand);
-        output.setOutputType(OutputType.NAME);
-        output.setBrandContent(selectedName);
+        output.setOutputType(OutputType.CONCEPT);
+        output.setBrandContent(selectedConcept);
 
         //저장
         brandOutputRepository.save(output);
 
-        brand.moveToConcept();
+        brand.moveToStory();
     }
 }

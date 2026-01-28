@@ -1,4 +1,4 @@
-package com.branding.branding_backend.branding.service;
+package com.branding.branding_backend.branding.service.naming;
 
 import java.util.Map;
 

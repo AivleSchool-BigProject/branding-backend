@@ -40,4 +40,12 @@ public class AiClient {
                 "name3", "Truston"
         );
     }
+
+    public Map<String, Object> requestConcept(Map<String, Object> payload) {
+        return Map.of(
+                "concept1", "spring",
+                "concept2", "summer",
+                "concept3", "fall"
+        );
+    }
 }

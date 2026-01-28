@@ -1,4 +1,4 @@
-package com.branding.branding_backend.branding.service;
+package com.branding.branding_backend.branding.service.interview;
 
 import com.branding.branding_backend.ai.AiClient;
 import com.branding.branding_backend.branding.entity.Brand;
