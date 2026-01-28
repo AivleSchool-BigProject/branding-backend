@@ -48,4 +48,12 @@ public class AiClient {
                 "concept3", "fall"
         );
     }
+
+    public Map<String, Object> requestStory(Map<String, Object> payload) {
+        return Map.of(
+                "story1", "this is story1",
+                "story2", "this is story2",
+                "story3", "this is story3"
+        );
+    }
 }

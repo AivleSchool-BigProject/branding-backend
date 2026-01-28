@@ -5,6 +5,7 @@ import com.branding.branding_backend.branding.service.concept.ConceptServiceImpl
 import com.branding.branding_backend.branding.service.interview.InterviewService;
 import com.branding.branding_backend.branding.service.naming.NamingService;
 import com.branding.branding_backend.branding.service.naming.NamingServiceImpl;
+import com.branding.branding_backend.branding.service.story.StoryServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -21,6 +22,7 @@ public class BrandController {
     private final NamingService namingService;
     private final ConceptServiceImpl conceptServiceImpl;
     private final NamingServiceImpl namingServiceImpl;
+    private final StoryServiceImpl storyServiceImpl;
 
     //브랜드 인터뷰 제출 + AI 진단 + 결과 반환
     @PostMapping("/interview")
@@ -82,6 +84,31 @@ public class BrandController {
     ) {
         Long userId = (Long) authentication.getPrincipal();
         conceptServiceImpl.selectConcept(userId, brandId, request.getSelectedByUser());
+        return ResponseEntity.ok().build();
+    }
+
+    //스토리 컨셉폼 전송 + AI 결과 전달
+    @PostMapping("/{brandId}/story")
+    public ResponseEntity<Map<String, Object>> generateStory(
+            @PathVariable Long brandId,
+            Authentication authentication,
+            @RequestBody Map<String, Object> storyInput
+    ) {
+        Long userId = (Long) authentication.getPrincipal();
+        return ResponseEntity.ok(
+                storyServiceImpl.processStory(userId, brandId, storyInput)
+        );
+    }
+
+    //브랜드 스토리 저장
+    @PostMapping("/{brandId}/story/select")
+    public ResponseEntity<Void> selectStory(
+            @PathVariable Long brandId,
+            Authentication authentication,
+            @RequestBody BrandSelectRequest request
+    ) {
+        Long userId = (Long) authentication.getPrincipal();
+        storyServiceImpl.selectStory(userId, brandId, request.getSelectedByUser());
         return ResponseEntity.ok().build();
     }
 }
