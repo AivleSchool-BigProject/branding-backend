@@ -59,9 +59,9 @@ public class AiClient {
 
     public Map<String, Object> requestLogo(Map<String, Object> payload) {
         return Map.of(
-                "logo1", "url1",
-                "logo2", "url2",
-                "logo3", "url3"
+                "logo1", "https://placehold.co/512x512?text=LOGO+1",
+                "logo2", "https://placehold.co/512x512?text=LOGO+2",
+                "logo3", "https://placehold.co/512x512?text=LOGO+3"
         );
     }
 }

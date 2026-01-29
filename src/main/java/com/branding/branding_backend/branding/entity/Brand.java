@@ -26,7 +26,7 @@ public class Brand {
     private User user;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "current_step")
+    @Column(name = "current_step", length = 30)
     private CurrentStep currentStep;
 
     @CreatedDate
