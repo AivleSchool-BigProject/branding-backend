@@ -3,7 +3,7 @@ package com.branding.branding_backend.branding;
 import com.branding.branding_backend.branding.dto.BrandSelectRequest;
 import com.branding.branding_backend.branding.service.concept.ConceptServiceImpl;
 import com.branding.branding_backend.branding.service.interview.InterviewService;
-import com.branding.branding_backend.branding.service.naming.NamingService;
+import com.branding.branding_backend.branding.service.logo.LogoServiceImpl;
 import com.branding.branding_backend.branding.service.naming.NamingServiceImpl;
 import com.branding.branding_backend.branding.service.story.StoryServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -19,10 +19,10 @@ import java.util.Map;
 public class BrandController {
 
     private final InterviewService interviewService;
-    private final NamingService namingService;
     private final ConceptServiceImpl conceptServiceImpl;
     private final NamingServiceImpl namingServiceImpl;
     private final StoryServiceImpl storyServiceImpl;
+    private final LogoServiceImpl logoServiceImpl;
 
     //브랜드 인터뷰 제출 + AI 진단 + 결과 반환
     @PostMapping("/interview")
@@ -87,7 +87,7 @@ public class BrandController {
         return ResponseEntity.ok().build();
     }
 
-    //스토리 컨셉폼 전송 + AI 결과 전달
+    //스토리폼 전송 + AI 결과 전달
     @PostMapping("/{brandId}/story")
     public ResponseEntity<Map<String, Object>> generateStory(
             @PathVariable Long brandId,
@@ -109,6 +109,30 @@ public class BrandController {
     ) {
         Long userId = (Long) authentication.getPrincipal();
         storyServiceImpl.selectStory(userId, brandId, request.getSelectedByUser());
+        return ResponseEntity.ok().build();
+    }
+
+    //로고폼 전송 + AI 결과 전달
+    @PostMapping("/{brandId}/logo")
+    public ResponseEntity<Map<String, Object>> generateLogo(
+            @PathVariable Long brandId,
+            Authentication authentication,
+            @RequestBody Map<String, Object> logoInput
+    ) {
+        Long userId = (Long) authentication.getPrincipal();
+        return ResponseEntity.ok(
+                logoServiceImpl.processLogo(userId, brandId, logoInput)
+        );
+    }
+    //로고 저장
+    @PostMapping("/{brandId}/logo/select")
+    public ResponseEntity<Void> selectLogo(
+            @PathVariable Long brandId,
+            Authentication authentication,
+            @RequestBody BrandSelectRequest request
+    ) {
+        Long userId = (Long) authentication.getPrincipal();
+        logoServiceImpl.selectLogo(userId, brandId, request.getSelectedByUser());
         return ResponseEntity.ok().build();
     }
 }

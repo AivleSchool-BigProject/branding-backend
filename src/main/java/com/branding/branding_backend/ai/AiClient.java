@@ -56,4 +56,12 @@ public class AiClient {
                 "story3", "this is story3"
         );
     }
+
+    public Map<String, Object> requestLogo(Map<String, Object> payload) {
+        return Map.of(
+                "logo1", "url1",
+                "logo2", "url2",
+                "logo3", "url3"
+        );
+    }
 }

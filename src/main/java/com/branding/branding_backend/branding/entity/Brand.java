@@ -49,4 +49,8 @@ public class Brand {
     public void moveToLogo(){
         this.currentStep = CurrentStep.LOGO;
     }
+
+    public void moveToFinal(){
+        this.currentStep = CurrentStep.FINAL;
+    }
 }

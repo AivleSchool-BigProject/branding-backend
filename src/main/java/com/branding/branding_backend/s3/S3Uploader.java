@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -55,5 +56,22 @@ public class S3Uploader {
 
     private String extractFileName(String imageUrl) {
         return imageUrl.substring(imageUrl.indexOf(".com/") + 5);
+    }
+
+    //Logo url 업로드
+    public String upload(byte[] imageBytes) {
+        if (imageBytes == null || imageBytes.length == 0) {
+            throw new IllegalArgumentException("이미지 데이터가 비어 있습니다.");
+        }
+
+        String fileName = "logos/" + UUID.randomUUID() + ".png";
+
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentLength(imageBytes.length);
+        metadata.setContentType("image/png");
+
+        amazonS3.putObject(bucket, fileName, new ByteArrayInputStream(imageBytes), metadata);
+
+        return amazonS3.getUrl(bucket, fileName).toString();
     }
 }

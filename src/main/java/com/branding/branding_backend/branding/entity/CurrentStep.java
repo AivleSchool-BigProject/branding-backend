@@ -6,5 +6,5 @@ public enum CurrentStep {
     CONCEPT,
     STORY,
     LOGO,
-    FINAL_REPORT
+    FINAL
 }
