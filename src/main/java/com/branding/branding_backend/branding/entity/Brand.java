@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 
@@ -29,28 +28,33 @@ public class Brand {
     @Column(name = "current_step", length = 30)
     private CurrentStep currentStep;
 
-    @CreatedDate
-    @Column(name = "created_at", updatable = false)
+    @Column(name = "created_at", updatable = false, nullable = false)
     private LocalDateTime createdAt;
 
-    //다음 스탭으로 변경
-    public void moveToNaming(){
+    /* ================= JPA 생명주기 ================= */
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
+    /* ================= 비즈니스 로직 ================= */
+    public void moveToNaming() {
         this.currentStep = CurrentStep.NAMING;
     }
 
-    public void moveToConcept(){
+    public void moveToConcept() {
         this.currentStep = CurrentStep.CONCEPT;
     }
 
-    public void moveToStory(){
+    public void moveToStory() {
         this.currentStep = CurrentStep.STORY;
     }
 
-    public void moveToLogo(){
+    public void moveToLogo() {
         this.currentStep = CurrentStep.LOGO;
     }
 
-    public void moveToFinal(){
+    public void moveToFinal() {
         this.currentStep = CurrentStep.FINAL;
     }
 }
