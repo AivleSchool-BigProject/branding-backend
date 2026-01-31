@@ -5,9 +5,7 @@ import com.branding.branding_backend.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -33,5 +31,20 @@ public class MyPageController {
                 myPageService.getMyBrands(user);
 
         return ResponseEntity.ok(response);
+    }
+    //마이페이지 - 브랜드 삭제
+    @PostMapping("/brands/{brandsId}")
+    public ResponseEntity<Void> deleteBrand(
+            @PathVariable Long brandsId,
+            Authentication authentication
+    ) {
+        Long userId = (Long) authentication.getPrincipal();
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자"));
+
+        myPageService.deleteBrand(user, brandsId);
+
+        return ResponseEntity.noContent().build();
     }
 }

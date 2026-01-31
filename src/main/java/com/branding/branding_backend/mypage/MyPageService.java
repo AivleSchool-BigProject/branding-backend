@@ -5,12 +5,16 @@ import com.branding.branding_backend.branding.entity.BrandOutput;
 import com.branding.branding_backend.branding.entity.OutputType;
 import com.branding.branding_backend.branding.repository.BrandOutputRepository;
 import com.branding.branding_backend.branding.repository.BrandRepository;
+import com.branding.branding_backend.branding.repository.InterviewReportRepository;
+import com.branding.branding_backend.s3.S3Uploader;
 import com.branding.branding_backend.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+
+import static reactor.netty.http.HttpConnectionLiveness.log;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +23,8 @@ public class MyPageService {
 
     private final BrandRepository brandRepository;
     private final BrandOutputRepository brandOutputRepository;
+    private final InterviewReportRepository interviewReportRepository;
+    private final S3Uploader s3Uploader;
 
 
     public List<BrandListResponseDto> getMyBrands(User user) {
@@ -66,21 +72,35 @@ public class MyPageService {
         return result;
     }
 
+    @Transactional
     public void deleteBrand(User user, Long brandId) {
 
-        //필요 Repository/Service
-        // BrandRepository
-        // BrandOutputRepository
-        // InterviewRepository
-        // S3Service
-
-
         // 1.삭제 하는 유저와 해당 brandId가 일치 하는지 확인
+        Brand brand = brandRepository.findById(brandId)
+                .orElseThrow(() -> new IllegalArgumentException("Brand not found"));
+        if (!brand.getUser().getUserId().equals(user.getUserId())) {
+            throw new IllegalStateException("User is not the owner of the brand");
+        }
         // 2.brandId에 해당하는 BrandOutput 조회
+        List<BrandOutput> outputs =
+                brandOutputRepository.findByBrandIn(List.of(brand));
         // 3.S3로고 삭제
-        // - URL이 실제로 있을 경우만 (실패시 로그만 남기고 진행)
+        outputs.stream()
+                .filter(output -> output.getOutputType() == OutputType.LOGO)
+                .map(BrandOutput::getBrandContent)
+                .filter(Objects::nonNull)
+                .forEach(imageUrl -> {
+                    try{
+                        s3Uploader.delete(imageUrl);
+                    } catch (Exception e) {
+                        log.warn("S3로고 삭제 실패: {}", imageUrl, e);
+                    }
+                });
         // 4.brandId에 해당하는 BrandOutput 삭제
+        brandOutputRepository.deleteByBrand(brand);
         // 5.brandId에 해당하는 interviewreport 정리
+        interviewReportRepository.deleteByBrand(brand);
         // 6. brandId에 해당하는 brand테이블 정리
+        brandRepository.deleteById(brandId);
     }
 }
