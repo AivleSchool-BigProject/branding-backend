@@ -14,4 +14,6 @@ public interface BrandOutputRepository extends JpaRepository<BrandOutput, Long> 
             OutputType outputType);
 
     List<BrandOutput> findByBrandIn(List<Brand> brands);
+
+    void deleteByBrand(Brand brand);
 }

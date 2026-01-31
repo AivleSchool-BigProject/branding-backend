@@ -10,7 +10,7 @@ import java.net.URL;
 @Component
 public class ImageDownloader {
 
-    public byte[] download(String imageUrl) {
+    public DownloadedImage download(String imageUrl) {
         HttpURLConnection connection = null;
 
         try {
@@ -20,15 +20,13 @@ public class ImageDownloader {
             connection.setConnectTimeout(5000);
             connection.setReadTimeout(5000);
 
-            // ✅ 1. HTTP 상태 코드 검증
             int status = connection.getResponseCode();
             if (status != HttpURLConnection.HTTP_OK) {
                 throw new RuntimeException("이미지 다운로드 실패. HTTP status=" + status);
             }
 
-            // ✅ 2. Content-Type 검증
             String contentType = connection.getContentType();
-            if (contentType == null || !contentType.startsWith("image")) {
+            if (contentType == null || !contentType.startsWith("image/")) {
                 throw new RuntimeException("이미지가 아닙니다. contentType=" + contentType);
             }
 
@@ -42,13 +40,17 @@ public class ImageDownloader {
                     out.write(buffer, 0, bytesRead);
                 }
 
-                return out.toByteArray();
+                byte[] bytes = out.toByteArray();
+                if (bytes.length < 1024) {
+                    throw new RuntimeException("이미지 데이터가 너무 작습니다.");
+                }
+
+                return new DownloadedImage(bytes, contentType);
             }
 
         } catch (Exception e) {
             throw new RuntimeException("이미지 다운로드 실패: " + imageUrl, e);
         } finally {
-            // ✅ 3. 연결 정리
             if (connection != null) {
                 connection.disconnect();
             }

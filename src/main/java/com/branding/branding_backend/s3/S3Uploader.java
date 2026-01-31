@@ -20,14 +20,14 @@ public class S3Uploader {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    /* ================= 업로드 ================= */
+    /* ================= Multipart 업로드 ================= */
     public String upload(MultipartFile file) {
 
         if (file.isEmpty()) {
             throw new IllegalArgumentException("파일이 비어 있습니다.");
         }
 
-        String fileName = createFileName(file.getOriginalFilename());
+        String fileName = "posts/" + UUID.randomUUID() + "_" + file.getOriginalFilename();
 
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(file.getSize());
@@ -42,36 +42,40 @@ public class S3Uploader {
         return amazonS3.getUrl(bucket, fileName).toString();
     }
 
+    /* ================= Logo 업로드 ================= */
+    public String upload(DownloadedImage image) {
+
+        String extension = extractExtension(image.getContentType());
+        String fileName = "logos/" + UUID.randomUUID() + extension;
+
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentLength(image.getBytes().length);
+        metadata.setContentType(image.getContentType());
+
+        amazonS3.putObject(
+                bucket,
+                fileName,
+                new ByteArrayInputStream(image.getBytes()),
+                metadata
+        );
+
+        return amazonS3.getUrl(bucket, fileName).toString();
+    }
+
     /* ================= 삭제 ================= */
     public void delete(String imageUrl) {
-
-        String fileName = extractFileName(imageUrl);
+        String fileName = imageUrl.substring(imageUrl.indexOf(".com/") + 5);
         amazonS3.deleteObject(bucket, fileName);
     }
 
-    /* ================= 내부 메서드 ================= */
-    private String createFileName(String originalFilename) {
-        return "posts/" + UUID.randomUUID() + "_" + originalFilename;
-    }
-
-    private String extractFileName(String imageUrl) {
-        return imageUrl.substring(imageUrl.indexOf(".com/") + 5);
-    }
-
-    //Logo url 업로드
-    public String upload(byte[] imageBytes) {
-        if (imageBytes == null || imageBytes.length == 0) {
-            throw new IllegalArgumentException("이미지 데이터가 비어 있습니다.");
-        }
-
-        String fileName = "logos/" + UUID.randomUUID() + ".png";
-
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentLength(imageBytes.length);
-        metadata.setContentType("image/png");
-
-        amazonS3.putObject(bucket, fileName, new ByteArrayInputStream(imageBytes), metadata);
-
-        return amazonS3.getUrl(bucket, fileName).toString();
+    /* ================= 내부 ================= */
+    private String extractExtension(String contentType) {
+        return switch (contentType) {
+            case "image/png" -> ".png";
+            case "image/jpeg" -> ".jpg";
+            case "image/webp" -> ".webp";
+            case "image/svg+xml" -> ".svg";
+            default -> throw new IllegalArgumentException("지원하지 않는 이미지 타입: " + contentType);
+        };
     }
 }

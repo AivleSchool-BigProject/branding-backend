@@ -65,4 +65,22 @@ public class MyPageService {
         // 5. DTO 리스트 반환
         return result;
     }
+
+    public void deleteBrand(User user, Long brandId) {
+
+        //필요 Repository/Service
+        // BrandRepository
+        // BrandOutputRepository
+        // InterviewRepository
+        // S3Service
+
+
+        // 1.삭제 하는 유저와 해당 brandId가 일치 하는지 확인
+        // 2.brandId에 해당하는 BrandOutput 조회
+        // 3.S3로고 삭제
+        // - URL이 실제로 있을 경우만 (실패시 로그만 남기고 진행)
+        // 4.brandId에 해당하는 BrandOutput 삭제
+        // 5.brandId에 해당하는 interviewreport 정리
+        // 6. brandId에 해당하는 brand테이블 정리
+    }
 }
