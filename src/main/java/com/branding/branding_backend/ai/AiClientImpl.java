@@ -30,12 +30,15 @@ public class AiClientImpl implements AiClient {
     }
 
     @Override
-    public Map<String, Object> requestNaming(Map<String, Object> payload) {
-        return Map.of(
-                "name1", "Brandify",
-                "name2", "Cloudia",
-                "name3", "Truston"
-        );
+    public Map<String, Object> requestNaming(
+            Map<String, Object> namingInput) {
+        return webClient
+                .post()
+                .uri(aiServerBaseUrl + "/brands/naming")
+                .bodyValue(namingInput)
+                .retrieve()
+                .bodyToMono(Map.class)
+                .block();
     }
 
     @Override
