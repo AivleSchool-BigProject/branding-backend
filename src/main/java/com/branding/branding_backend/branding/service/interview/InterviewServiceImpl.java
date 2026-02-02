@@ -8,6 +8,7 @@ import com.branding.branding_backend.branding.repository.BrandRepository;
 import com.branding.branding_backend.branding.repository.InterviewReportRepository;
 import com.branding.branding_backend.user.User;
 import com.branding.branding_backend.user.UserRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class InterviewServiceImpl implements InterviewService {
     private final InterviewReportRepository interviewReportRepository;
     private final UserRepository userRepository;
     private final AiClient aiClient;
+    private final ObjectMapper objectMapper;
 
     @Override
     public Map<String, Object> processInterview(
@@ -42,9 +44,15 @@ public class InterviewServiceImpl implements InterviewService {
                 aiClient.requestInterviewReport(interviewInput);
 
         //Interview Report 저장
+        String aiReportJson;
+        try {
+            aiReportJson = objectMapper.writeValueAsString(aiReport);
+        } catch (Exception e) {
+            throw new IllegalStateException("AI 인터뷰 결과 JSOn 변환 실패", e);
+        }
         InterviewReport report = new InterviewReport(
                 brand,
-                aiReport.toString()
+                aiReportJson
         );
         interviewReportRepository.save(report);
 
