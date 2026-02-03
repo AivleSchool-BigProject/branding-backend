@@ -27,10 +27,10 @@ public interface BrandStateContextRepository extends JpaRepository<BrandStateCon
 
     // 3. 같은 brand+step의 최신 version 조회 (없으면 0)
     @Query("""
-        select coalesces(max(c.version), 0)
-        from BrandStateContext c
-        where c.brand = :brand
-            and c.step = :step
+    select coalesce(max(c.version), 0)
+    from BrandStateContext c
+    where c.brand = :brand
+      and c.step = :step
     """)
     int findMaxVersionByBrandAndStep(
             @Param("brand") Brand brand,
@@ -40,11 +40,11 @@ public interface BrandStateContextRepository extends JpaRepository<BrandStateCon
     // 4. 같은 brand+step에서 기존 active를 비활성화 (재생성 대비)
     @Modifying
     @Query("""
-        update BrandStateContext c
-        set c.isActive = :brand
-        where c.brand = :brand
-        and c.step = :step
-        and c.isActive = true
+    update BrandStateContext c
+    set c.isActive = false
+    where c.brand = :brand
+      and c.step = :step
+      and c.isActive = true
     """)
     int deactivateActiveByBrandAndStep(
             @Param("brand") Brand brand,
