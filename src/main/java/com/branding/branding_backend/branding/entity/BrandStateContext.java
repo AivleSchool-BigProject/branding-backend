@@ -40,7 +40,7 @@ public class BrandStateContext {
     @Column(name = "state_context", columnDefinition = "TEXT", nullable = false)
     private String stateContext;
 
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "state_created_at", nullable = false)
     private LocalDateTime createdAt;
 
     @PrePersist

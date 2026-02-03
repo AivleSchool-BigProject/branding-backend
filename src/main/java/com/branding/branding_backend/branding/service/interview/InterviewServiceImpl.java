@@ -49,7 +49,7 @@ public class InterviewServiceImpl implements InterviewService {
 
         // 4. 응답 분리
         Map<String, Object> report =
-                (Map<String, Object>) aiResponse.get("report");
+                (Map<String, Object>) aiResponse.get("result");
         Map<String, Object> stateContext =
                 (Map<String, Object>) aiResponse.get("state_context");
 
@@ -84,6 +84,8 @@ public class InterviewServiceImpl implements InterviewService {
         context.setVersion(1);
         context.setIsActive(true);
         context.setStateContext(contextJson);
+
+        brandStateContextRepository.save(context);
 
         // 7. NAMING으로 step 이동
         brand.moveToNaming();

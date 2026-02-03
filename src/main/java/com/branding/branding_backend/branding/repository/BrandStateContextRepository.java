@@ -43,12 +43,12 @@ public interface BrandStateContextRepository extends JpaRepository<BrandStateCon
     update BrandStateContext c
     set c.isActive = false
     where c.brand = :brand
-      and c.step = :step
-      and c.isActive = true
+    and c.step = :step
+    and c.isActive = true
     """)
     int deactivateActiveByBrandAndStep(
             @Param("brand") Brand brand,
-            @Param("step")  CurrentStep step
+            @Param("step") CurrentStep step
     );
 
     // 5. 브랜드 삭제 시 Context도 삭제
