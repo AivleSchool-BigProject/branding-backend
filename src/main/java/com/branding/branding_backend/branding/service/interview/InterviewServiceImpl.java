@@ -2,9 +2,11 @@ package com.branding.branding_backend.branding.service.interview;
 
 import com.branding.branding_backend.ai.AiClient;
 import com.branding.branding_backend.branding.entity.Brand;
+import com.branding.branding_backend.branding.entity.BrandStateContext;
 import com.branding.branding_backend.branding.entity.CurrentStep;
 import com.branding.branding_backend.branding.entity.InterviewReport;
 import com.branding.branding_backend.branding.repository.BrandRepository;
+import com.branding.branding_backend.branding.repository.BrandStateContextRepository;
 import com.branding.branding_backend.branding.repository.InterviewReportRepository;
 import com.branding.branding_backend.user.User;
 import com.branding.branding_backend.user.UserRepository;
@@ -25,44 +27,71 @@ public class InterviewServiceImpl implements InterviewService {
     private final UserRepository userRepository;
     private final AiClient aiClient;
     private final ObjectMapper objectMapper;
+    private final BrandStateContextRepository brandStateContextRepository;
 
     @Override
     public Map<String, Object> processInterview(
             Long userId,
             Map<String, Object> interviewInput
     ) {
+        // 1. 사용자 조회
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        //brand 생성
+        // 2. 브랜드 생성
         Brand brand = new Brand();
         brand.setUser(user);
         brand.setCurrentStep(CurrentStep.INTERVIEW);
         brandRepository.save(brand);
 
-        //AI 서버 호출
-        Map<String, Object> aiReport =
+        // 3. FastAPI 호출
+        Map<String, Object> aiResponse =
                 aiClient.requestInterviewReport(interviewInput);
 
-        //Interview Report 저장
-        String aiReportJson;
-        try {
-            aiReportJson = objectMapper.writeValueAsString(aiReport);
-        } catch (Exception e) {
-            throw new IllegalStateException("AI 인터뷰 결과 JSOn 변환 실패", e);
-        }
-        InterviewReport report = new InterviewReport(
-                brand,
-                aiReportJson
-        );
-        interviewReportRepository.save(report);
+        // 4. 응답 분리
+        Map<String, Object> report =
+                (Map<String, Object>) aiResponse.get("report");
+        Map<String, Object> stateContext =
+                (Map<String, Object>) aiResponse.get("state_context");
 
-        //Brand 상태 업데이트
+        // 5. Interview Report 저장
+        String reportJson;
+        try {
+            reportJson = objectMapper.writeValueAsString(report);
+        } catch (Exception e) {
+            throw new IllegalStateException(
+                    "Interview report JSON 변환 실패", e
+            );
+        }
+
+        InterviewReport interviewReport =
+                new InterviewReport(brand, reportJson);
+        interviewReportRepository.save(interviewReport);
+
+        // 6. Context State 저장 (Interview)
+        String contextJson;
+        try {
+            contextJson = objectMapper.writeValueAsString(stateContext);
+        } catch (Exception e) {
+            throw new IllegalStateException(
+                    "Interview context JSON 변환 실패", e
+            );
+        }
+
+        BrandStateContext context =
+                new BrandStateContext();
+        context.setBrand(brand);
+        context.setStep(CurrentStep.INTERVIEW);
+        context.setVersion(1);
+        context.setIsActive(true);
+        context.setStateContext(contextJson);
+
+        // 7. NAMING으로 step 이동
         brand.moveToNaming();
 
-        //프런트로 반환할 데이터 구성
+        // 8. 프론트로 report 반환
         return Map.of(
                 "brandId", brand.getBrandId(),
-                "interviewReport", aiReport
+                "interviewReport", report
         );
     }
 }
