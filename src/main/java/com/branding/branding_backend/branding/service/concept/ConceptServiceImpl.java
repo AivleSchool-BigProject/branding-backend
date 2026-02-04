@@ -54,7 +54,7 @@ public class ConceptServiceImpl implements ConceptService {
         // 3. FastAPI로 전달할 payload 구성
         Map<String, Object> payload = Map.of(
                 "user_input", conceptInput,
-                "contexts", Map.of(
+                "context", Map.of(
                         CurrentStep.INTERVIEW.name(), interviewContext.getStateContext(),
                         CurrentStep.NAMING.name(), namingContext.getStateContext()
                 )
