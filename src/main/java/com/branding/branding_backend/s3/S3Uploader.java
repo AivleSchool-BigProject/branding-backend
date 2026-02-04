@@ -69,13 +69,23 @@ public class S3Uploader {
     }
 
     /* ================= 내부 ================= */
-    private String extractExtension(String contentType) {
+    private String extractExtension(String rawContentType) {
+        String contentType = normalizeContentType(rawContentType);
+
         return switch (contentType) {
             case "image/png" -> ".png";
             case "image/jpeg" -> ".jpg";
             case "image/webp" -> ".webp";
             case "image/svg+xml" -> ".svg";
-            default -> throw new IllegalArgumentException("지원하지 않는 이미지 타입: " + contentType);
+            default -> throw new IllegalArgumentException("지원하지 않는 이미지 타입: " + rawContentType);
         };
+    }
+    /**
+     * 예: "image/svg+xml; charset=utf-8" -> "image/svg+xml"
+     */
+    private String normalizeContentType(String raw) {
+        if (raw == null) return "";
+        String base = raw.split(";")[0].trim();
+        return base.toLowerCase();
     }
 }
