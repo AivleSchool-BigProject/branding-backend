@@ -5,6 +5,7 @@ import com.branding.branding_backend.branding.entity.BrandOutput;
 import com.branding.branding_backend.branding.entity.OutputType;
 import com.branding.branding_backend.branding.repository.BrandOutputRepository;
 import com.branding.branding_backend.branding.repository.BrandRepository;
+import com.branding.branding_backend.branding.repository.BrandStateContextRepository;
 import com.branding.branding_backend.branding.repository.InterviewReportRepository;
 import com.branding.branding_backend.s3.S3Uploader;
 import com.branding.branding_backend.user.User;
@@ -25,6 +26,7 @@ public class MyPageService {
     private final BrandOutputRepository brandOutputRepository;
     private final InterviewReportRepository interviewReportRepository;
     private final S3Uploader s3Uploader;
+    private final BrandStateContextRepository brandStateContextRepository;
 
 
     public List<BrandListResponseDto> getMyBrands(User user) {
@@ -81,6 +83,8 @@ public class MyPageService {
         if (!brand.getUser().getUserId().equals(user.getUserId())) {
             throw new IllegalStateException("User is not the owner of the brand");
         }
+        // 추가) Staet_context 테이블 삭제
+        brandStateContextRepository.deleteByBrand(brand);
         // 2.brandId에 해당하는 BrandOutput 조회
         List<BrandOutput> outputs =
                 brandOutputRepository.findByBrandIn(List.of(brand));
