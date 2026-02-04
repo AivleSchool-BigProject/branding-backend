@@ -42,29 +42,39 @@ public class AiClientImpl implements AiClient {
     }
 
     @Override
-    public Map<String, Object> requestConcept(Map<String, Object> payload) {
-        return Map.of(
-                "concept1", "spring",
-                "concept2", "summer",
-                "concept3", "fall"
-        );
+    public Map<String, Object> requestConcept(
+            Map<String, Object> conceptInput
+    ) {
+        return webClient
+                .post()
+                .uri(aiServerBaseUrl + "/brands/concept")
+                .bodyValue(conceptInput)
+                .retrieve()
+                .bodyToMono(Map.class)
+                .block();
     }
 
     @Override
-    public Map<String, Object> requestStory(Map<String, Object> payload) {
-        return Map.of(
-                "story1", "this is story1",
-                "story2", "this is story2",
-                "story3", "this is story3"
-        );
+    public Map<String, Object> requestStory(
+            Map<String, Object> storyInput) {
+        return webClient
+                .post()
+                .uri(aiServerBaseUrl + "/brands/story")
+                .bodyValue(storyInput)
+                .retrieve()
+                .bodyToMono(Map.class)
+                .block();
     }
 
     @Override
-    public Map<String, Object> requestLogo(Map<String, Object> payload) {
-        return Map.of(
-                "logo1", "https://placehold.co/512x512?text=LOGO+1",
-                "logo2", "https://placehold.co/512x512?text=LOGO+2",
-                "logo3", "https://placehold.co/512x512?text=LOGO+3"
-        );
+    public Map<String, Object> requestLogo(
+            Map<String, Object> logoInput) {
+        return webClient
+                .post()
+                .uri(aiServerBaseUrl + "/brands/logo")
+                .bodyValue(logoInput)
+                .retrieve()
+                .bodyToMono(Map.class)
+                .block();
     }
 }
