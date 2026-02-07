@@ -37,15 +37,16 @@ public class InterviewServiceImpl implements InterviewService {
         // 1. 사용자 조회
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        // 2. 브랜드 생성
+
+        // 2. FastAPI 호출
+        Map<String, Object> aiResponse =
+                aiClient.requestInterviewReport(interviewInput);
+
+        // 3. 브랜드 생성
         Brand brand = new Brand();
         brand.setUser(user);
         brand.setCurrentStep(CurrentStep.INTERVIEW);
         brandRepository.save(brand);
-
-        // 3. FastAPI 호출
-        Map<String, Object> aiResponse =
-                aiClient.requestInterviewReport(interviewInput);
 
         // 4. 응답 분리
         Map<String, Object> report =
