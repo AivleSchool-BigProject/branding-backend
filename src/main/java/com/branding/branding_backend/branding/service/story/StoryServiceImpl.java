@@ -40,7 +40,7 @@ public class StoryServiceImpl implements StoryService {
             throw new IllegalStateException("스토리 단계가 아닙니다.");
         }
 
-        // 2. 이전 단계 Context 조회 (Interview, Naming, Concept)
+        // 2. 이전 단계 Context 조회 & 사용자 선택 추가 (Interview, Naming, Concept)
         BrandStateContext interviewContext =
                 brandStateContextRepository
                         .findByBrandAndStepAndIsActiveTrue(brand, CurrentStep.INTERVIEW)
@@ -53,6 +53,18 @@ public class StoryServiceImpl implements StoryService {
                 brandStateContextRepository
                         .findByBrandAndStepAndIsActiveTrue(brand, CurrentStep.CONCEPT)
                         .orElseThrow(() -> new IllegalStateException("Concept context가 없습니다."));
+
+        BrandOutput selectedName =
+                brandOutputRepository
+                        .findByBrandAndOutputType(brand, OutputType.NAME)
+                        .orElseThrow(() -> new IllegalStateException("선택된 네이밍이 없습니다."));
+
+        BrandOutput selectedConcept =
+                brandOutputRepository
+                        .findByBrandAndOutputType(brand, OutputType.CONCEPT)
+                        .orElseThrow(() -> new IllegalStateException("선택된 컨셉이 없습니다."));
+        storyInput.put("selected_name", selectedName.getBrandContent());
+        storyInput.put("selected_concept", selectedConcept.getBrandContent());
 
         // 3. FastAPI로 전달할 payload 구성
         Map<String, Object> payload = Map.of(

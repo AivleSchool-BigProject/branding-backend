@@ -51,6 +51,14 @@ public class ConceptServiceImpl implements ConceptService {
                         .findByBrandAndStepAndIsActiveTrue(brand, CurrentStep.NAMING)
                         .orElseThrow(() -> new IllegalStateException("NAMING Context가 아닙니다."));
 
+        BrandOutput selectedName =
+                brandOutputRepository
+                        .findByBrandAndOutputType(brand, OutputType.NAME)
+                        .orElseThrow(() -> new IllegalStateException("선택된 네이밍이 없습니다."));
+
+        conceptInput.put("selected_name", selectedName.getBrandContent());
+
+
         // 3. FastAPI로 전달할 payload 구성
         Map<String, Object> payload = Map.of(
                 "user_input", conceptInput,
@@ -78,7 +86,7 @@ public class ConceptServiceImpl implements ConceptService {
                 brandStateContextRepository
                         .findMaxVersionByBrandAndStep(brand, CurrentStep.CONCEPT) + 1;
 
-        // 7. 새로운 Naming Context 저장
+        // 7. 새로운 Concept Context 저장
         String contextJson;
         try {
             contextJson = objectMapper.writeValueAsString(stateContext);

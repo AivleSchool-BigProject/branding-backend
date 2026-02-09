@@ -63,6 +63,25 @@ public class LogoServiceImpl implements LogoService {
                         .findByBrandAndStepAndIsActiveTrue(brand, CurrentStep.STORY)
                         .orElseThrow(() -> new IllegalStateException("Story context가 없습니다."));
 
+        BrandOutput selectedName =
+            brandOutputRepository
+                    .findByBrandAndOutputType(brand, OutputType.NAME)
+                    .orElseThrow(() -> new IllegalStateException("선택된 Name이 없습니다."));
+
+        BrandOutput selectedConcept =
+                brandOutputRepository
+                        .findByBrandAndOutputType(brand, OutputType.CONCEPT)
+                        .orElseThrow(() -> new IllegalStateException("선택된 컨셉이 없습니다."));
+
+        BrandOutput selectedStory =
+                brandOutputRepository
+                        .findByBrandAndOutputType(brand, OutputType.STORY)
+                        .orElseThrow(() -> new IllegalStateException("선택된 스토리가 없습니다."));
+
+        logoInput.put("selected_name", selectedName.getBrandContent());
+        logoInput.put("selected_concept", selectedConcept.getBrandContent());
+        logoInput.put("selected_story", selectedStory.getBrandContent());
+
         // 3. FastAPI로 전달할 payload 구성
         Map<String, Object> payload = Map.of(
                 "user_input", logoInput,

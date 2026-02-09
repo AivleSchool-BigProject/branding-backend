@@ -41,7 +41,7 @@ public class NamingServiceImpl implements NamingService {
         }
 
         // 2. 이전 단계 Context 조회 (Interview)
-        BrandStateContext precontext =
+        BrandStateContext interviewContext =
                 brandStateContextRepository
                         .findByBrandAndStepAndIsActiveTrue(brand, CurrentStep.INTERVIEW)
                         .orElseThrow(() -> new IllegalStateException("Interview Context가 없습니다."));
@@ -50,7 +50,7 @@ public class NamingServiceImpl implements NamingService {
         Map<String, Object> payload = Map.of(
                 "user_input", namingInput,
                 "context", Map.of(
-                        "interview", precontext.getStateContext()
+                        "INTERVIEW", interviewContext.getStateContext()
                 )
         );
 
