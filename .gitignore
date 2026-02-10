@@ -1,7 +1,6 @@
 # --- Environment / Secrets ---
 .env
 .env.*
-src/main/resources/application-docker.yml
 
 # --- Spring config (local only) ---
 src/main/resources/application.yaml
