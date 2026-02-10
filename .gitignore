@@ -1,3 +1,13 @@
+# --- Environment / Secrets ---
+.env
+.env.*
+application-docker.yml
+src/main/resources/application-docker.yml
+
+# --- Spring config (local only) ---
+src/main/resources/application.yaml
+
+# --- Build / IDE ---
 HELP.md
 .gradle
 build/
@@ -35,6 +45,3 @@ out/
 
 ### VS Code ###
 .vscode/
-
-# application.yml / yaml
-src/main/resources/application.yaml
