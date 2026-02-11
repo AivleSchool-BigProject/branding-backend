@@ -10,4 +10,5 @@ public class BrandingBackendApplication {
 		SpringApplication.run(BrandingBackendApplication.class, args);
 	}
 
+
 }
