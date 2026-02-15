@@ -20,8 +20,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(Customizer.withDefaults())   // 🔥 이걸로 복구
-
+                .cors(Customizer.withDefaults())   // CORS 적용
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
@@ -31,15 +30,20 @@ public class SecurityConfig {
                 )
 
                 .authorizeHttpRequests(auth -> auth
+                        // Swagger
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui.html"
                         ).permitAll()
 
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/brands/posts/**").permitAll()
+                        // 🔥 로그인 / 회원가입 (nginx 기준 /api 포함)
+                        .requestMatchers("/api/auth/**").permitAll()
 
+                        // 게시글 조회 공개
+                        .requestMatchers(HttpMethod.GET, "/api/brands/posts/**").permitAll()
+
+                        // 그 외는 인증 필요
                         .anyRequest().authenticated()
                 )
 

@@ -1,4 +1,5 @@
 package com.branding.branding_backend.security;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
@@ -18,9 +19,16 @@ public class CorsConfig {
                 "http://localhost:3000",
                 "http://localhost:5173",
                 "http://54.180.142.15",
-                "http://54.180.142.15:80"
+                "http://54.180.142.15:80",
+                "http://aibrandpilot.com",
+                "https://aibrandpilot.com",
+                "https://www.aibrandpilot.com"
         ));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+
+        config.setAllowedMethods(List.of(
+                "GET", "POST", "PUT", "DELETE", "OPTIONS"
+        ));
+
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
 
