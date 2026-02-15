@@ -38,10 +38,10 @@ public class SecurityConfig {
                         ).permitAll()
 
                         // 🔥 로그인 / 회원가입 (nginx 기준 /api 포함)
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/auth/**").permitAll()
 
                         // 게시글 조회 공개
-                        .requestMatchers(HttpMethod.GET, "/api/brands/posts/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/brands/posts/**").permitAll()
 
                         // 그 외는 인증 필요
                         .anyRequest().authenticated()
