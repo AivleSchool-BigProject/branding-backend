@@ -33,9 +33,9 @@ public class MyPageController {
         return ResponseEntity.ok(response);
     }
     //마이페이지 - 브랜드 삭제
-    @PostMapping("/brands/{brandsId}")
+    @DeleteMapping("/brands/{brandId}")
     public ResponseEntity<Void> deleteBrand(
-            @PathVariable Long brandsId,
+            @PathVariable Long brandId,
             Authentication authentication
     ) {
         Long userId = (Long) authentication.getPrincipal();
@@ -43,7 +43,7 @@ public class MyPageController {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자"));
 
-        myPageService.deleteBrand(user, brandsId);
+        myPageService.deleteBrand(user, brandId);
 
         return ResponseEntity.noContent().build();
     }
