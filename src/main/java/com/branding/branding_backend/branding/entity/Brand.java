@@ -57,4 +57,5 @@ public class Brand {
     public void moveToFinal() {
         this.currentStep = CurrentStep.FINAL;
     }
+
 }
