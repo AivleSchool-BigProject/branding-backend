@@ -18,8 +18,8 @@ public class CorsConfig {
         config.setAllowedOrigins(List.of(
                 "http://localhost:3000",
                 "http://localhost:5173",
-                "http://54.180.142.15",
-                "http://54.180.142.15:80",
+                "http://13.125.210.26",
+                "http://13.125.210.26:80",
                 "http://aibrandpilot.com",
                 "https://aibrandpilot.com",
                 "https://www.aibrandpilot.com"
