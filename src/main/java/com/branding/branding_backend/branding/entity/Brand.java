@@ -31,13 +31,12 @@ public class Brand {
     @Column(name = "created_at", updatable = false, nullable = false)
     private LocalDateTime createdAt;
 
-    /* ================= JPA 생명주기 ================= */
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
     }
 
-    /* ================= 비즈니스 로직 ================= */
+    // 컨설팅 로직
     public void moveToNaming() {
         this.currentStep = CurrentStep.NAMING;
     }

@@ -42,7 +42,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String method = request.getMethod();
         String authHeader = request.getHeader("Authorization");
 
-        // ★ 요청 들어오는지 / 헤더 붙는지 확인
+        // 요청 들어오는지 / 헤더 붙는지 확인
         System.out.println("[JWT-FILTER] " + method + " " + path);
         System.out.println("[JWT-FILTER] Authorization header = " + authHeader);
 
@@ -58,7 +58,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
-                                userId,                 // principal = userId
+                                userId,
                                 null,
                                 Collections.emptyList()
                         );
@@ -69,7 +69,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                // ★ SecurityContext에 들어갔는지 확인
                 System.out.println("[JWT-FILTER] SecurityContext principal = "
                         + SecurityContextHolder.getContext().getAuthentication().getPrincipal());
             }
