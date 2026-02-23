@@ -20,7 +20,7 @@ public class S3Uploader {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    /* ================= Multipart 업로드 ================= */
+
     public String upload(MultipartFile file) {
 
         if (file.isEmpty()) {
@@ -42,7 +42,7 @@ public class S3Uploader {
         return amazonS3.getUrl(bucket, fileName).toString();
     }
 
-    /* ================= Logo 업로드 ================= */
+
     public String upload(DownloadedImage image) {
 
         String extension = extractExtension(image.getContentType());
@@ -62,13 +62,13 @@ public class S3Uploader {
         return amazonS3.getUrl(bucket, fileName).toString();
     }
 
-    /* ================= 삭제 ================= */
+
     public void delete(String imageUrl) {
         String fileName = imageUrl.substring(imageUrl.indexOf(".com/") + 5);
         amazonS3.deleteObject(bucket, fileName);
     }
 
-    /* ================= 내부 ================= */
+
     private String extractExtension(String rawContentType) {
         String contentType = normalizeContentType(rawContentType);
 
@@ -80,9 +80,7 @@ public class S3Uploader {
             default -> throw new IllegalArgumentException("지원하지 않는 이미지 타입: " + rawContentType);
         };
     }
-    /**
-     * 예: "image/svg+xml; charset=utf-8" -> "image/svg+xml"
-     */
+
     private String normalizeContentType(String raw) {
         if (raw == null) return "";
         String base = raw.split(";")[0].trim();
